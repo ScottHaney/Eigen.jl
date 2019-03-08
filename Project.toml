@@ -1,4 +1,4 @@
-name = "Krylov"
+name = "Eigen"
 uuid = "7507a7f6-3d49-11e9-0311-d5c5dd687c63"
 authors = ["Scott Haney <emailalmondbranch@gmail.com>"]
 version = "0.1.0"
