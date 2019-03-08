@@ -1,5 +1,5 @@
-module Krylov
+module Eigen
 
-KrylovTest(x) = x * x
+EigenTest(x) = x * x
 
 end
