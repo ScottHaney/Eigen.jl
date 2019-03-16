@@ -28,7 +28,7 @@ function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-    current = Guess
+    current = LinearAlgebra.normalize(Guess)
     iteration = 0
 
     while !ShouldStop(StoppingCriteria, iteration, Matrix, current)
