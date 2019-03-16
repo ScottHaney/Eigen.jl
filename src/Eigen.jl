@@ -13,6 +13,10 @@ function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer)
     return IterationsExecuted >= N.n
 end
 
+function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
+    LinearAlgebra.transpose(X) * Matrix * x
+end
+
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
     current = Guess
     iteration = 0
