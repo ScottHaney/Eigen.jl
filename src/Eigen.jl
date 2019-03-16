@@ -13,6 +13,10 @@ mutable struct Residual <: IterativeStoppingCritera
     value
 end
 
+mutable struct CompositeStoppingCriteria <: IterativeStoppingCritera
+    criteria
+end
+
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     return IterationsExecuted >= N.n
 end
@@ -21,6 +25,16 @@ function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMa
     estimate = rayleighquotient(Matrix, V)
     diff = Matrix * V - estimate * V
     return LinearAlgebra.norm(diff) <= R.value
+end
+
+function ShouldStop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
+    for c in Composite.criteria
+        if ShouldStop(c, IterationsExecuted, Matrix, V)
+            return true
+        end
+    end
+
+    return false
 end
 
 function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
