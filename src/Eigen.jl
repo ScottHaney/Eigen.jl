@@ -17,7 +17,7 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
 
     while !ShouldStop(StoppingCriteria, iteration)
         current = Matrix * current
-        iteration = iteration + 1
+        iteration += 1
     end
 
     return current
