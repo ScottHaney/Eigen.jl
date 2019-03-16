@@ -1,5 +1,7 @@
 module Eigen
 
+using LinearAlgebra
+
 abstract type IterativeStoppingCritera
 end
 
@@ -16,7 +18,7 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
     iteration = 0
 
     while !ShouldStop(StoppingCriteria, iteration)
-        current = Matrix * current
+        current = LinearAlgebra.normalize!(Matrix * current)
         iteration += 1
     end
 
