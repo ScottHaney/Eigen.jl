@@ -20,11 +20,11 @@ end
 function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     estimate = rayleighquotient(Matrix, V)
     diff = Matrix * V - estimate * V
-    return R.value <= LinearAlgebra.norm(diff)
+    return LinearAlgebra.norm(diff) <= R.value
 end
 
 function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
-    LinearAlgebra.transpose(X) * Matrix * x
+    LinearAlgebra.transpose(X) * Matrix * X
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
