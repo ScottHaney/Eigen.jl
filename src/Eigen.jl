@@ -13,12 +13,14 @@ mutable struct Residual <: IterativeStoppingCritera
     value
 end
 
-function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer)
+function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     return IterationsExecuted >= N.n
 end
 
-function ShouldStop(R::Residual, IterationsExecuted::Integer)
-    return true
+function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
+    estimate = rayleighquotient(Matrix, V)
+    diff = Matrix * V - estimate * V
+    return R.value <= LinearAlgebra.norm(diff)
 end
 
 function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
@@ -29,7 +31,7 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
     current = Guess
     iteration = 0
 
-    while !ShouldStop(StoppingCriteria, iteration)
+    while !ShouldStop(StoppingCriteria, iteration, Matrix, current)
         current = LinearAlgebra.normalize!(Matrix * current)
         iteration += 1
     end
