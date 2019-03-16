@@ -9,8 +9,16 @@ mutable struct ExactlyNIterations <: IterativeStoppingCritera
     n::Integer
 end
 
+mutable struct Residual <: IterativeStoppingCritera
+    value
+end
+
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer)
     return IterationsExecuted >= N.n
+end
+
+function ShouldStop(R::Residual, IterationsExecuted::Integer)
+    return true
 end
 
 function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
