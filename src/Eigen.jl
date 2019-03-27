@@ -53,4 +53,9 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
     return current
 end
 
+function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
+    stoppingcriteria = CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
+    powermethod(Matrix, Guess, stoppingcriteria)
+end
+
 end
