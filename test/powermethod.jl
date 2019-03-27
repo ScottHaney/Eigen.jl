@@ -22,3 +22,12 @@ end
 
     @test LinearAlgebra.norm(actual - expected) <= 0.1
 end
+
+@testset "Stops before finding the eigenvector due to a constraint on the maximum number of iterations" begin
+    matrix = [6 0; 0 2]
+    guess = [1; 1]
+    stoppingcriteria = Eigen.CompositeStoppingCriteria([Eigen.Residual(0.1), Eigen.ExactlyNIterations(0)])
+
+    actual = Eigen.powermethod(matrix, guess, stoppingcriteria)
+    @test actual == LinearAlgebra.normalize(guess)
+end
