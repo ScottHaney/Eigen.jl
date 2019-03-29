@@ -41,6 +41,18 @@ function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
     LinearAlgebra.transpose(X) * Matrix * X
 end
 
+function iterationmethod2(Matrix::AbstractMatrix, InitialConditions, InitialCalculation::Function, Action::Function, StoppingCriteria::IterativeStoppingCritera)
+    currentvalues = InitialCalculation(Matrix, InitialConditions)
+    iteration = 0
+
+    while !ShouldStop(StoppingCriteria, iteration, Matrix, currentvalues)
+        currentvalues = Action(Matrix, currentvalues, iteration)
+        iteration += 1
+    end
+
+    return currentvalues
+end
+
 function iterationmethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera, Action::Function)
     current = LinearAlgebra.normalize(Guess)
     iteration = 0
