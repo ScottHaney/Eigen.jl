@@ -63,15 +63,7 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIteration
 end
 
 function inverseiteration(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-    current = LinearAlgebra.normalize(Guess)
-    iteration = 0
-
-    while !ShouldStop(StoppingCritera, iteration, Matrix, current)
-        current = LinearAlgebra.normalize!(Matrix \ current)
-        iteration += 1
-    end
-
-    return current
+    iterationmethod(Matrix, Guess, StoppingCriteria, (m, c, i) -> LinearAlgebra.normalize!(m \ c))
 end
 
 end
