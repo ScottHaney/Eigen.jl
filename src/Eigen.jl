@@ -70,6 +70,10 @@ function iterationmethod(Matrix::AbstractMatrix, Guess::AbstractVector, Stopping
     return current
 end
 
+function powermethod2(StartingValues, StoppingCriteria::IterativeStoppingCritera)
+    iterationmethod2(StartingValues, (m,c,i) -> LinearAlgebra.normalize!(m * c))
+end
+
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
     iterationmethod(Matrix, Guess, StoppingCriteria, (m,c,i) -> LinearAlgebra.normalize!(m * c))
 end
