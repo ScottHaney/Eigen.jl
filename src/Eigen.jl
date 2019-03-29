@@ -17,6 +17,11 @@ mutable struct CompositeStoppingCriteria <: IterativeStoppingCritera
     criteria
 end
 
+mutable struct EigenEstimates
+    eigenvalue
+    eigenvector
+end
+
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     return IterationsExecuted >= N.n
 end
@@ -41,12 +46,12 @@ function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
     LinearAlgebra.transpose(X) * Matrix * X
 end
 
-function iterationmethod2(Matrix::AbstractMatrix, InitialConditions, InitialCalculation::Function, Action::Function, StoppingCriteria::IterativeStoppingCritera)
-    currentvalues = InitialCalculation(Matrix, InitialConditions)
+function iterationmethod2(StartingValues, IterationAction::Function, StoppingCriteria::IterativeStoppingCritera)
+    current = StartingValues
     iteration = 0
 
-    while !ShouldStop(StoppingCriteria, iteration, Matrix, currentvalues)
-        currentvalues = Action(Matrix, currentvalues, iteration)
+    while !ShouldStop(StoppingCriteria, iteration, Matrix, current)
+        current = IterationAction(Matrix, current, iteration)
         iteration += 1
     end
 
