@@ -66,4 +66,9 @@ function inverseiteration(Matrix::AbstractMatrix, Guess::AbstractVector, Stoppin
     iterationmethod(Matrix, Guess, StoppingCriteria, (m, c, i) -> LinearAlgebra.normalize!(m \ c))
 end
 
+function inverseiteration(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
+    stoppingcriteria = CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
+    inverseiteration(Matrix, Guess, stoppingcriteria)
+end
+
 end
