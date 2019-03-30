@@ -50,4 +50,8 @@ result = inverseiteration(M, shift, V, stoppingconditions)
 
 #Run the rayleigh quotient iteration method
 result = rayleighquotient(M, V, stoppingconditions)
+
+#For each method the return type is the same
+result.eigenvalue #eigenvalue
+result.eigenvector #eigenvector
 ```
