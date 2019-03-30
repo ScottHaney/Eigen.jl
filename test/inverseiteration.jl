@@ -8,5 +8,5 @@
     actual = Eigen.inverseiteration(matrix, guessshift, guess, stoppingcriteria)
     expected = [0; 1]
 
-    @test LinearAlgebra.norm(actual - expected) <= 0.1
+    @test LinearAlgebra.norm(actual.eigenvector - expected) <= 0.1
 end

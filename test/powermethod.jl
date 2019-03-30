@@ -7,7 +7,7 @@
     actual = Eigen.powermethod(identity, guess, stoppingcriteria)
     expected = [1; 0]
 
-    @test actual == expected
+    @test actual.eigenvector == expected
 end
 
 @testset "Finds the eigenvector for a large eigenvalue using the residual stopping criteria" begin
@@ -18,7 +18,7 @@ end
     actual = Eigen.powermethod(matrix, guess, stoppingcriteria)
     expected = [1; 0]
 
-    @test LinearAlgebra.norm(actual - expected) <= 0.1
+    @test LinearAlgebra.norm(actual.eigenvector - expected) <= 0.1
 end
 
 @testset "Stops before finding the eigenvector due to a constraint on the maximum number of iterations" begin
@@ -27,5 +27,5 @@ end
     stoppingcriteria = Eigen.CompositeStoppingCriteria([Eigen.Residual(0.1), Eigen.ExactlyNIterations(0)])
 
     actual = Eigen.powermethod(matrix, guess, stoppingcriteria)
-    @test LinearAlgebra.norm(actual - LinearAlgebra.normalize(guess)) <= 0.001
+    @test LinearAlgebra.norm(actual.eigenvector - LinearAlgebra.normalize(guess)) <= 0.001
 end

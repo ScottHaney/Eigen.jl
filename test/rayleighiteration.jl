@@ -7,6 +7,5 @@
     actual = Eigen.rayleighiteration(matrix, guess, stoppingcriteria)
     expected = [1;0]
 
-    print(actual.eigenvector)
     @test LinearAlgebra.norm(actual.eigenvector - expected) <= 0.1
 end

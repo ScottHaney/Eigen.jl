@@ -70,7 +70,15 @@ function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction
         iteration += 1
     end
 
-    return current
+    return iterationresult(Matrix, current)
+end
+
+function iterationresult(Matrix::AbstractMatrix, V::AbstractVector)
+    EigenEstimates(Matrix, V)
+end
+
+function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates)
+    Estimates
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
