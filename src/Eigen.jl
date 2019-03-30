@@ -26,8 +26,8 @@ function stoppingcriteria(TargetResidual::Real, MaxIterations::Integer)
 end
 
 mutable struct EigenEstimates
-    eigenvalue
-    eigenvector
+    eigenvalue::Number
+    eigenvector::AbstractVector
 end
 
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
@@ -72,6 +72,10 @@ end
 
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
     iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
+end
+
+function rayleighiteration(Matrix::AbstractMatrix, StartingValues::EigenEstimates, StoppingCriteria::IterativeStoppingCritera)
+    iterationmethod(Matrix, StartingValues, (m,c,i) -> LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector), StoppingCriteria)
 end
 
 end
