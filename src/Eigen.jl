@@ -59,7 +59,7 @@ function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-    iterationmethod2(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
+    iterationmethod(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
@@ -68,7 +68,7 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIteration
 end
 
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-    iterationmethod2(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
+    iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
 end
 
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
