@@ -2,18 +2,18 @@ module Eigen
 
 using LinearAlgebra
 
-abstract type IterativeStoppingCritera
+abstract type IterativeStoppingCriteria
 end
 
-mutable struct ExactlyNIterations <: IterativeStoppingCritera
+mutable struct ExactlyNIterations <: IterativeStoppingCriteria
     n::Integer
 end
 
-mutable struct Residual <: IterativeStoppingCritera
+mutable struct Residual <: IterativeStoppingCriteria
     value
 end
 
-mutable struct CompositeStoppingCriteria <: IterativeStoppingCritera
+mutable struct CompositeStoppingCriteria <: IterativeStoppingCriteria
     criteria
 end
 
@@ -61,7 +61,7 @@ function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
     LinearAlgebra.transpose(X) * Matrix * X
 end
 
-function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction::Function, StoppingCriteria::IterativeStoppingCritera)
+function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction::Function, StoppingCriteria::IterativeStoppingCriteria)
     current = StartingValues
     iteration = 0
 
@@ -73,15 +73,15 @@ function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction
     return current
 end
 
-function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
+function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
     iterationmethod(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
 end
 
-function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
+function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
     iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
 end
 
-function rayleighiteration(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
+function rayleighiteration(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
     iterationmethod(Matrix, EigenEstimates(Matrix, Guess),
     function(m,c,i)
         newguess = LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector)
