@@ -32,7 +32,7 @@ mutable struct EigenEstimates
     EigenEstimates(Matrix::AbstractMatrix, eigenvector::AbstractVector) = new(rayleighquotient(Matrix, eigenvector), eigenvector)
 end
 
-function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
+function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
     return IterationsExecuted >= N.n
 end
 
@@ -42,9 +42,14 @@ function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMa
     return LinearAlgebra.norm(diff) <= R.value
 end
 
-function ShouldStop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
+function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues::EigenEstimates)
+    diff = Matrix * CurrentValues.eigenvector - CurrentValues.eigenvalue * CurrentValues.eigenvector
+    return LinearAlgebra.norm(diff) <= R.value
+end
+
+function ShouldStop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
     for c in Composite.criteria
-        if ShouldStop(c, IterationsExecuted, Matrix, V)
+        if ShouldStop(c, IterationsExecuted, Matrix, CurrentValues)
             return true
         end
     end
