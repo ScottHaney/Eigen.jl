@@ -4,3 +4,4 @@ using Eigen
 
 include("powermethod.jl")
 include("inverseiteration.jl")
+include("rayleighiteration.jl")

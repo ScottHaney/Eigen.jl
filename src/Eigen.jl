@@ -28,8 +28,10 @@ end
 mutable struct EigenEstimates
     eigenvalue::Number
     eigenvector::AbstractVector
+end
 
-    EigenEstimates(Matrix::AbstractMatrix, eigenvector::AbstractVector) = new(rayleighquotient(Matrix, eigenvector), eigenvector)
+function createeigenestimates(Matrix::AbstractMatrix, Guess::AbstractVector)
+    EigenEstimates(rayleighquotient(Matrix, Guess), Guess)
 end
 
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
@@ -81,8 +83,12 @@ function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, 
     iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
 end
 
-function rayleighiteration(Matrix::AbstractMatrix, StartingValues::EigenEstimates, StoppingCriteria::IterativeStoppingCritera)
-    iterationmethod(Matrix, StartingValues, (m,c,i) -> LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector), StoppingCriteria)
+function rayleighiteration(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
+    iterationmethod(Matrix, createeigenestimates(Matrix, Guess),
+    function(m,c,i)
+        newguess = LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector)
+        createeigenestimates(Matrix, newguess)
+    end, StoppingCriteria)
 end
 
 end
