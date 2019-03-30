@@ -32,24 +32,24 @@ mutable struct EigenEstimates
     EigenEstimates(Matrix::AbstractMatrix, Guess::AbstractVector) = new(rayleighquotient(Matrix, Guess), Guess)
 end
 
-function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
+function shouldstop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
     return IterationsExecuted >= N.n
 end
 
-function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
+function shouldstop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     estimate = rayleighquotient(Matrix, V)
     diff = Matrix * V - estimate * V
     return LinearAlgebra.norm(diff) <= R.value
 end
 
-function ShouldStop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues::EigenEstimates)
+function shouldstop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues::EigenEstimates)
     diff = Matrix * CurrentValues.eigenvector - CurrentValues.eigenvalue * CurrentValues.eigenvector
     return LinearAlgebra.norm(diff) <= R.value
 end
 
-function ShouldStop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
+function shouldstop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
     for c in Composite.criteria
-        if ShouldStop(c, IterationsExecuted, Matrix, CurrentValues)
+        if shouldstop(c, IterationsExecuted, Matrix, CurrentValues)
             return true
         end
     end
@@ -65,7 +65,7 @@ function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction
     current = StartingValues
     iteration = 0
 
-    while !ShouldStop(StoppingCriteria, iteration, Matrix, current)
+    while !shouldstop(StoppingCriteria, iteration, Matrix, current)
         current = IterationAction(Matrix, current, iteration)
         iteration += 1
     end
