@@ -1,5 +1,3 @@
-using Eigen
-
 @testset "Finds the eigenvalue 1 for an identity matrix" begin
 
     identity = Matrix{Int}(I, 2, 2)
