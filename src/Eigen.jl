@@ -28,6 +28,8 @@ end
 mutable struct EigenEstimates
     eigenvalue::Number
     eigenvector::AbstractVector
+
+    EigenEstimates(Matrix::AbstractMatrix, eigenvector::AbstractVector) = new(rayleighquotient(Matrix, eigenvector), eigenvector)
 end
 
 function ShouldStop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
