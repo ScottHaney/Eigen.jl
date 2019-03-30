@@ -17,6 +17,14 @@ mutable struct CompositeStoppingCriteria <: IterativeStoppingCritera
     criteria
 end
 
+function stoppingcriteria(TargetResidual::Real)
+    Residual(TargetResidual)
+end
+
+function stoppingcriteria(TargetResidual::Real, MaxIterations::Integer)
+    CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
+end
+
 mutable struct EigenEstimates
     eigenvalue
     eigenvector
@@ -62,18 +70,8 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
     iterationmethod(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
 end
 
-function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
-    stoppingcriteria = CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
-    powermethod(Matrix, Guess, stoppingcriteria)
-end
-
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
     iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
-end
-
-function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
-    stoppingcriteria = CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
-    inverseiteration(Matrix, Shift, Guess, stoppingcriteria)
 end
 
 end
