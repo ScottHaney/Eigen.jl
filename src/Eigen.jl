@@ -87,7 +87,7 @@ function rayleighiteration(Matrix::AbstractMatrix, Guess::AbstractVector, Stoppi
     iterationmethod(Matrix, createeigenestimates(Matrix, Guess),
     function(m,c,i)
         newguess = LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector)
-        createeigenestimates(Matrix, newguess)
+        createeigenestimates(m, newguess)
     end, StoppingCriteria)
 end
 
