@@ -74,17 +74,13 @@ function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCrit
     iterationmethod2(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
 end
 
-#function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-#    iterationmethod(Matrix, Guess, StoppingCriteria, (m,c,i) -> LinearAlgebra.normalize!(m * c))
-#end
-
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
     stoppingcriteria = CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
     powermethod(Matrix, Guess, stoppingcriteria)
 end
 
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCritera)
-    iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), Guess, StoppingCriteria, (m, c, i) -> LinearAlgebra.normalize!(m \ c))
+    iterationmethod2(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
 end
 
 function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, MaxIterations::Integer, TargetResidual)
