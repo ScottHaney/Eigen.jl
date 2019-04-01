@@ -32,29 +32,38 @@ mutable struct EigenEstimates
     EigenEstimates(Matrix::AbstractMatrix, Guess::AbstractVector) = new(rayleighquotient(Matrix, Guess), Guess)
 end
 
+mutable struct EigenResult
+    eigenvalue::Number
+    eigenvector::AbstractVector
+    isvalid::Bool
+
+    EigenResult(Estimates::EigenEstimates, isvalid::Bool) = new(Estimates.eigenvalue, Estimates.eigenvector, isvalid)
+end
+
 function shouldstop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
-    return IterationsExecuted >= N.n
+    return IterationsExecuted >= N.n, false
 end
 
 function shouldstop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, V::AbstractVector)
     estimate = rayleighquotient(Matrix, V)
     diff = Matrix * V - estimate * V
-    return LinearAlgebra.norm(diff) <= R.value
+    return LinearAlgebra.norm(diff) <= R.value, true
 end
 
 function shouldstop(R::Residual, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues::EigenEstimates)
     diff = Matrix * CurrentValues.eigenvector - CurrentValues.eigenvalue * CurrentValues.eigenvector
-    return LinearAlgebra.norm(diff) <= R.value
+    return LinearAlgebra.norm(diff) <= R.value, true
 end
 
 function shouldstop(Composite::CompositeStoppingCriteria, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
     for c in Composite.criteria
-        if shouldstop(c, IterationsExecuted, Matrix, CurrentValues)
-            return true
+        stop, foundresult = shouldstop(c, IterationsExecuted, Matrix, CurrentValues)
+        if stop
+            return stop, foundresult
         end
     end
 
-    return false
+    return false, false
 end
 
 function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
@@ -65,20 +74,22 @@ function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction
     current = StartingValues
     iteration = 0
 
-    while !shouldstop(StoppingCriteria, iteration, Matrix, current)
+    stop, foundresult = shouldstop(StoppingCriteria, iteration, Matrix, current)
+    while !stop
         current = IterationAction(Matrix, current, iteration)
         iteration += 1
+        stop, foundresult = shouldstop(StoppingCriteria, iteration, Matrix, current)
     end
 
-    return iterationresult(Matrix, current)
+    return iterationresult(Matrix, current, foundresult)
 end
 
-function iterationresult(Matrix::AbstractMatrix, V::AbstractVector)
-    EigenEstimates(Matrix, V)
+function iterationresult(Matrix::AbstractMatrix, V::AbstractVector, FoundResult::Bool)
+    EigenResult(EigenEstimates(Matrix, V), FoundResult)
 end
 
-function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates)
-    Estimates
+function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates, FoundResult::Bool)
+    EigenResult(Estimates, FoundResult)
 end
 
 function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
