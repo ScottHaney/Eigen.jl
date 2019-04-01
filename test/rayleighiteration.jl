@@ -8,4 +8,5 @@
     expected = [1;0]
 
     @test LinearAlgebra.norm(actual.eigenvector - expected) <= 0.1
+    @test actual.isvalid == true
 end
