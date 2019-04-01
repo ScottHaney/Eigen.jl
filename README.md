@@ -52,6 +52,16 @@ result = inverseiteration(M, shift, V, stoppingconditions)
 result = rayleighquotient(M, V, stoppingconditions)
 
 #For each method the return type is the same
+
+#The eigenvalue and eigenvector estimates can be found as follows
+
 result.eigenvalue #eigenvalue
 result.eigenvector #eigenvector
+
+#To tell if the iterative algorithm terminated due to finding a result that is within a desired residual
+#just check isvalid. If it is false that means that the iterative algorithm terminated due to it reaching
+#a maximum iteration limit and the result is not known to be within any predefined residual. If it is true
+#then the algorithm terminated because it found a result that is within the requested residual
+
+result.isvalid
 ```
