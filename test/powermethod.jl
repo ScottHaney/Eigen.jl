@@ -8,7 +8,7 @@
     expected = [1; 0]
 
     @test actual.eigenvector == expected
-    @test actual.isvalid == false
+    @test actual.isverified == false
 end
 
 @testset "Finds the eigenvector for a large eigenvalue using the residual stopping criteria" begin
@@ -20,7 +20,7 @@ end
     expected = [1; 0]
 
     @test LinearAlgebra.norm(actual.eigenvector - expected) <= 0.1
-    @test actual.isvalid == true
+    @test actual.isverified == true
 end
 
 @testset "Stops before finding the eigenvector due to a constraint on the maximum number of iterations" begin
@@ -30,5 +30,5 @@ end
 
     actual = Eigen.powermethod(matrix, guess, stoppingcriteria)
     @test LinearAlgebra.norm(actual.eigenvector - LinearAlgebra.normalize(guess)) <= 0.001
-    @test actual.isvalid == false
+    @test actual.isverified == false
 end

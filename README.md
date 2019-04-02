@@ -59,9 +59,9 @@ result.eigenvalue #eigenvalue
 result.eigenvector #eigenvector
 
 #To tell if the iterative algorithm terminated due to finding a result that is within a desired residual
-#just check isvalid. If it is false that means that the iterative algorithm terminated due to it reaching
+#just check isverified. If it is false that means that the iterative algorithm terminated due to it reaching
 #a maximum iteration limit and the result is not known to be within any predefined residual. If it is true
 #then the algorithm terminated because it found a result that is within the requested residual
 
-result.isvalid
+result.isverified
 ```

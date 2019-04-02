@@ -35,9 +35,9 @@ end
 mutable struct EigenResult
     eigenvalue::Number
     eigenvector::AbstractVector
-    isvalid::Bool
+    isverified::Bool
 
-    EigenResult(Estimates::EigenEstimates, isvalid::Bool) = new(Estimates.eigenvalue, Estimates.eigenvector, isvalid)
+    EigenResult(Estimates::EigenEstimates, isverified::Bool) = new(Estimates.eigenvalue, Estimates.eigenvector, isverified)
 end
 
 function shouldstop(N::ExactlyNIterations, IterationsExecuted::Integer, Matrix::AbstractMatrix, CurrentValues)
