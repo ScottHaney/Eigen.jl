@@ -17,19 +17,29 @@ mutable struct CompositeStoppingCriteria <: IterativeStoppingCriteria
     criteria
 end
 
+mutable struct EigenEstimates
+    eigenvalue::Number
+    eigenvector::AbstractVector
+
+    EigenEstimates(Matrix::AbstractMatrix, Guess::AbstractVector) = new(rayleighquotient(Matrix, Guess), Guess)
+    EigenEstimates(val::Number, vec::AbstractVector) = new(val, vec)
+end
+
+function normalizeStrategy(x::AbstractVector)
+    return LinearAlgebra.normalize!(x)
+end
+
+function normalizeStrategy(estimates::EigenEstimates)
+    estimates.eigenvector = normalizeStrategy(estimates.eigenvector)
+    return estimates
+end
+
 function stoppingcriteria(TargetResidual::Real)
     Residual(TargetResidual)
 end
 
 function stoppingcriteria(TargetResidual::Real, MaxIterations::Integer)
     CompositeStoppingCriteria([ExactlyNIterations(MaxIterations), Residual(TargetResidual)])
-end
-
-mutable struct EigenEstimates
-    eigenvalue::Number
-    eigenvector::AbstractVector
-
-    EigenEstimates(Matrix::AbstractMatrix, Guess::AbstractVector) = new(rayleighquotient(Matrix, Guess), Guess)
 end
 
 mutable struct EigenResult
@@ -70,13 +80,19 @@ function rayleighquotient(Matrix::AbstractMatrix, X::AbstractVector)
     LinearAlgebra.transpose(X) * Matrix * X
 end
 
-function iterationmethod(Matrix::AbstractMatrix, StartingValues, IterationAction::Function, StoppingCriteria::IterativeStoppingCriteria)
+function iterationmethod(Matrix::AbstractMatrix,
+    StartingValues,
+    IterationAction::Function,
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowStrategy)
+
     current = StartingValues
     iteration = 0
 
     stop, foundresult = shouldstop(StoppingCriteria, iteration, Matrix, current)
     while !stop
         current = IterationAction(Matrix, current, iteration)
+        current = overflowStrategy(current)
         iteration += 1
         stop, foundresult = shouldstop(StoppingCriteria, iteration, Matrix, current)
     end
@@ -92,20 +108,42 @@ function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates, Foun
     EigenResult(Estimates, FoundResult)
 end
 
-function powermethod(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
-    iterationmethod(Matrix, LinearAlgebra.normalize!(Guess), (m,c,i) -> LinearAlgebra.normalize!(m * c), StoppingCriteria)
+function powermethod(Matrix::AbstractMatrix,
+    Guess::AbstractVector,
+    StoppingCriteria::IterativeStoppingCriteria)
+
+    iterationmethod(Matrix,
+        LinearAlgebra.normalize!(Guess),
+        (m,c,i) -> m * c,
+        StoppingCriteria,
+        normalizeStrategy)
 end
 
-function inverseiteration(Matrix::AbstractMatrix, Shift, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
-    iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift), LinearAlgebra.normalize(Guess), (m, c, i) -> LinearAlgebra.normalize!(m \ c), StoppingCriteria)
+function inverseiteration(Matrix::AbstractMatrix,
+    Shift,
+    Guess::AbstractVector,
+    StoppingCriteria::IterativeStoppingCriteria)
+
+    iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift),
+        LinearAlgebra.normalize(Guess),
+        (m, c, i) -> m \ c,
+        StoppingCriteria,
+        normalizeStrategy)
 end
 
-function rayleighiteration(Matrix::AbstractMatrix, Guess::AbstractVector, StoppingCriteria::IterativeStoppingCriteria)
-    iterationmethod(Matrix, EigenEstimates(Matrix, Guess),
-    function(m,c,i)
-        newguess = LinearAlgebra.normalize!((m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector)
-        EigenEstimates(m, newguess)
-    end, StoppingCriteria)
+function rayleighiteration(Matrix::AbstractMatrix,
+    Guess::AbstractVector,
+    StoppingCriteria::IterativeStoppingCriteria)
+
+    iterationmethod(Matrix,
+        EigenEstimates(Matrix, Guess),
+        function(m,c,i)
+            vecestimate = (m - LinearAlgebra.UniformScaling(c.eigenvalue)) \ c.eigenvector
+            valestimate = LinearAlgebra.transpose(vecestimate) * m * vecestimate / (LinearAlgebra.transpose(vecestimate) * vecestimate)
+            EigenEstimates(valestimate, vecestimate)
+        end,
+        StoppingCriteria,
+        normalizeStrategy)
 end
 
 end
