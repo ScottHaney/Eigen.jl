@@ -29,6 +29,6 @@ end
     stoppingcriteria = Eigen.CompositeStoppingCriteria([Eigen.Residual(0.1), Eigen.ExactlyNIterations(0)])
 
     actual = Eigen.powermethod(matrix, guess, stoppingcriteria)
-    @test LinearAlgebra.norm(actual.eigenvector - LinearAlgebra.normalize(guess)) <= 0.001
+    @test LinearAlgebra.norm(LinearAlgebra.normalize(actual.eigenvector) - LinearAlgebra.normalize(guess)) <= 0.001
     @test actual.isverified == false
 end

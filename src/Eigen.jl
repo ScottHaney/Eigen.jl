@@ -25,12 +25,16 @@ mutable struct EigenEstimates
     EigenEstimates(val::Number, vec::AbstractVector) = new(val, vec)
 end
 
-function normalizeStrategy(x::AbstractVector)
+function normalizestrategy(x::AbstractVector)
     return LinearAlgebra.normalize!(x)
 end
 
-function normalizeStrategy(estimates::EigenEstimates)
-    estimates.eigenvector = normalizeStrategy(estimates.eigenvector)
+function normalizestrategy(x::AbstractVector{<:Integer})
+    return LinearAlgebra.normalize(x)
+end
+
+function normalizestrategy(estimates::EigenEstimates)
+    estimates.eigenvector = normalizestrategy(estimates.eigenvector)
     return estimates
 end
 
@@ -115,29 +119,14 @@ end
 
 function powermethod(Matrix::AbstractMatrix,
     Guess::AbstractVector,
-    StoppingCriteria::IterativeStoppingCriteria)
-
-    updatedguess = LinearAlgebra.normalize!(Guess)
-    powermethod_mainlogic(Matrix, updatedguess, StoppingCriteria)
-end
-
-function powermethod(Matrix::AbstractMatrix,
-    Guess::AbstractVector{<:Integer},
-    StoppingCriteria::IterativeStoppingCriteria)
-
-    updatedguess = LinearAlgebra.normalize(Guess)
-    powermethod_mainlogic(Matrix, updatedguess, StoppingCriteria)
-end
-
-function powermethod_mainlogic(Matrix::AbstractMatrix,
-    updatedguess::AbstractVector,
-    StoppingCriteria::IterativeStoppingCriteria)
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowstrategy = normalizestrategy)
 
     iterationmethod(Matrix,
-        updatedguess,
+        Guess,
         (m,c,i) -> m * c,
         StoppingCriteria,
-        normalizeStrategy)
+        overflowstrategy)
 end
 
 function inverseiteration(Matrix::AbstractMatrix,
@@ -149,7 +138,7 @@ function inverseiteration(Matrix::AbstractMatrix,
         LinearAlgebra.normalize(Guess),
         (m, c, i) -> m \ c,
         StoppingCriteria,
-        normalizeStrategy)
+        normalizestrategy)
 end
 
 function rayleighiteration(Matrix::AbstractMatrix,
@@ -164,7 +153,7 @@ function rayleighiteration(Matrix::AbstractMatrix,
             EigenEstimates(valestimate, vecestimate)
         end,
         StoppingCriteria,
-        normalizeStrategy)
+        normalizestrategy)
 end
 
 end
