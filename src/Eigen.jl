@@ -132,18 +132,20 @@ end
 function inverseiteration(Matrix::AbstractMatrix,
     Shift,
     Guess::AbstractVector,
-    StoppingCriteria::IterativeStoppingCriteria)
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowstrategy = normalizestrategy)
 
     iterationmethod(Matrix - LinearAlgebra.UniformScaling(Shift),
         LinearAlgebra.normalize(Guess),
         (m, c, i) -> m \ c,
         StoppingCriteria,
-        normalizestrategy)
+        overflowstrategy)
 end
 
 function rayleighiteration(Matrix::AbstractMatrix,
     Guess::AbstractVector,
-    StoppingCriteria::IterativeStoppingCriteria)
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowstrategy = normalizestrategy)
 
     iterationmethod(Matrix,
         EigenEstimates(Matrix, Guess),
@@ -153,7 +155,7 @@ function rayleighiteration(Matrix::AbstractMatrix,
             EigenEstimates(valestimate, vecestimate)
         end,
         StoppingCriteria,
-        normalizestrategy)
+        overflowstrategy)
 end
 
 end
