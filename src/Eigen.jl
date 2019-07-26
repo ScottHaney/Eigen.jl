@@ -112,11 +112,6 @@ function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates, Foun
     EigenResult(Estimates, FoundResult)
 end
 
-struct Meta
-    methodname
-    guesstype
-end
-
 function powermethod(Matrix::AbstractMatrix,
     Guess::AbstractVector,
     StoppingCriteria::IterativeStoppingCriteria,
