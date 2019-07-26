@@ -108,30 +108,21 @@ function iterationresult(Matrix::AbstractMatrix, Estimates::EigenEstimates, Foun
     EigenResult(Estimates, FoundResult)
 end
 
-function powermethod(Matrix::AbstractMatrix,
-    Guess::AbstractVector,
-    StoppingCriteria::IterativeStoppingCriteria)
-
-    updatedGuess = LinearAlgebra.normalize!(Guess)
-
-    iterationmethod(Matrix,
-        updatedGuess,
-        (m,c,i) -> m * c,
-        StoppingCriteria,
-        normalizeStrategy)
-end
-
-function powermethod(Matrix::AbstractMatrix,
-    Guess::AbstractVector{<:Integer},
-    StoppingCriteria::IterativeStoppingCriteria)
-
-    updatedGuess = LinearAlgebra.normalize(Guess)
-
-    iterationmethod(Matrix,
-        updatedGuess,
-        (m,c,i) -> m * c,
-        StoppingCriteria,
-        normalizeStrategy)
+for op = (AbstractVector, AbstractVector{<:Integer})
+    @eval begin
+        function powermethod(Matrix::AbstractMatrix,
+            Guess::$op,
+            StoppingCriteria::IterativeStoppingCriteria)
+        
+            updatedGuess = LinearAlgebra.normalize(Guess)
+        
+            iterationmethod(Matrix,
+                updatedGuess,
+                (m,c,i) -> m * c,
+                StoppingCriteria,
+                normalizeStrategy)
+        end
+    end
 end
 
 function inverseiteration(Matrix::AbstractMatrix,
