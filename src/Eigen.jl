@@ -119,6 +119,19 @@ function powermethod(Matrix::AbstractMatrix,
         normalizeStrategy)
 end
 
+function powermethod(Matrix::AbstractMatrix,
+    Guess::AbstractVector{<:Integer},
+    StoppingCriteria::IterativeStoppingCriteria)
+
+    updatedGuess = LinearAlgebra.normalize(Guess)
+
+    iterationmethod(Matrix,
+        updatedGuess,
+        (m,c,i) -> m * c,
+        StoppingCriteria,
+        normalizeStrategy)
+end
+
 function inverseiteration(Matrix::AbstractMatrix,
     Shift,
     Guess::AbstractVector,
