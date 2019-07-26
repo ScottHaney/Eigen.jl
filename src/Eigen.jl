@@ -112,8 +112,10 @@ function powermethod(Matrix::AbstractMatrix,
     Guess::AbstractVector,
     StoppingCriteria::IterativeStoppingCriteria)
 
+    updatedGuess = LinearAlgebra.normalize!(Guess)
+
     iterationmethod(Matrix,
-        LinearAlgebra.normalize!(Guess),
+        updatedGuess,
         (m,c,i) -> m * c,
         StoppingCriteria,
         normalizeStrategy)
