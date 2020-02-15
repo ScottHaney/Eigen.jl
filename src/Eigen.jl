@@ -172,8 +172,8 @@ function arnoldi(Matrix::AbstractMatrix,
 
     rows = size(Matrix, 1)
 
-    Q = reshape([], rows, NumColumns)
-    H = reshape([], rows, NumColumns)
+    Q = zeros(rows, NumColumns + 1)
+    H = zeros(rows + 1, NumColumns)
 
     q = normalize(Guess)
     Q[1:rows, 1] = q
