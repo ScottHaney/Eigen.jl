@@ -166,4 +166,30 @@ function rayleighiteration(Matrix::AbstractMatrix,
         overflowstrategy)
 end
 
+function arnoldi(Matrix::AbstractMatrix,
+    Guess::AbstractVector,
+    NumColumns::Integer)
+
+    rows = size(Matrix, 1)
+
+    Q = reshape([], rows, NumColumns)
+    H = reshape([], rows, NumColumns)
+
+    q = normalize(Guess)
+    Q[1:rows, 1] = q
+
+    for i = 1:NumColumns
+        v = Matrix * Q[1:rows, i]
+        for j = 1:i
+            H[j, i] = transpose(Q[1:rows, j]) * v
+            v = v - H[j, i] * Q[1:rows, j]
+        end
+
+        H[i + 1, i] = norm(v)
+        Q[1:rows, i + 1] = v / H[i + 1, i]
+    end
+
+    return H
+end
+
 end
