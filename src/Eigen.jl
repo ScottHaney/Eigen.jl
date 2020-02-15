@@ -90,6 +90,19 @@ function iterationmethod(Matrix::AbstractMatrix,
     StoppingCriteria::IterativeStoppingCriteria,
     overflowStrategy)
 
+    iterationmethod(LinearAlgebra.UpperHessenberg(LinearAlgebra.hessenberg(Matrix).H),
+        StartingValues,
+        IterationAction,
+        StoppingCriteria,
+        overflowStrategy)
+end
+
+function iterationmethod(Matrix::LinearAlgebra.UpperHessenberg,
+    StartingValues,
+    IterationAction::Function,
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowStrategy)
+
     current = StartingValues
     iteration = 0
 
