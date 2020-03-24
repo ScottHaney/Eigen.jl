@@ -189,7 +189,7 @@ function arnoldi(Matrix::AbstractMatrix,
         Q[1:rows, i + 1] = v / H[i + 1, i]
     end
 
-    return H
+    return H[1:rows, 1:NumColumns]
 end
 
 end
