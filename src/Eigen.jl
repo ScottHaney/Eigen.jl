@@ -171,8 +171,11 @@ function arnoldi(Matrix::AbstractMatrix,
     NumColumns::Integer)
 
     rows = size(Matrix, 1)
+    columns = size(Matrix, 2)
 
-    Q = zeros(rows, NumColumns + 1)
+    isComplete = (NumColumns == columns)
+
+    Q = zeros(rows, isComplete ? NumColumns : NumColumns + 1)
     H = zeros(rows, NumColumns)
 
     q = normalize(Guess)
@@ -182,7 +185,7 @@ function arnoldi(Matrix::AbstractMatrix,
         v = Matrix * Q[1:rows, i]
 
         numJs = i
-        if (i == size(Matrix, 2))
+        if (i == columns)
             numJs = numJs - 1
         end
 
@@ -192,7 +195,10 @@ function arnoldi(Matrix::AbstractMatrix,
         end
 
         H[numJs + 1, i] = norm(v)
-        Q[1:rows, numJs + 1] = v / H[numJs + 1, i]
+
+        if (i != columns)
+            Q[1:rows, i + 1] = v / H[numJs + 1, i]
+        end
     end
 
     return H
