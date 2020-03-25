@@ -173,23 +173,29 @@ function arnoldi(Matrix::AbstractMatrix,
     rows = size(Matrix, 1)
 
     Q = zeros(rows, NumColumns + 1)
-    H = zeros(rows + 1, NumColumns)
+    H = zeros(rows, NumColumns)
 
     q = normalize(Guess)
     Q[1:rows, 1] = q
 
     for i = 1:NumColumns
         v = Matrix * Q[1:rows, i]
-        for j = 1:i
+
+        numJs = i
+        if (i == size(Matrix, 2))
+            numJs = numJs - 1
+        end
+
+        for j = 1:numJs
             H[j, i] = transpose(Q[1:rows, j]) * v
             v = v - H[j, i] * Q[1:rows, j]
         end
 
-        H[i + 1, i] = norm(v)
-        Q[1:rows, i + 1] = v / H[i + 1, i]
+        H[numJs + 1, i] = norm(v)
+        Q[1:rows, numJs + 1] = v / H[numJs + 1, i]
     end
 
-    return H[1:rows, 1:NumColumns]
+    return H
 end
 
 end
