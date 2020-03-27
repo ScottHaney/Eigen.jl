@@ -175,7 +175,7 @@ function arnoldi(Matrix::AbstractMatrix,
 
     isComplete = (NumColumns == columns)
 
-    Q = zeros(rows, isComplete ? NumColumns : NumColumns + 1)
+    Q = zeros(rows, NumColumns)
     H = zeros(rows, NumColumns)
 
     q = normalize(Guess)
@@ -196,7 +196,7 @@ function arnoldi(Matrix::AbstractMatrix,
 
         H[numJs + 1, i] = norm(v)
 
-        if (i != columns)
+        if (i != NumColumns)
             Q[1:rows, i + 1] = v / H[numJs + 1, i]
         end
     end
