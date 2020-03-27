@@ -196,7 +196,7 @@ function arnoldi(Matrix::AbstractMatrix,
 
         H[numJs + 1, i] = norm(v)
 
-        if (i != NumColumns)
+        if (i < NumColumns)
             Q[1:rows, i + 1] = v / H[numJs + 1, i]
         end
     end
