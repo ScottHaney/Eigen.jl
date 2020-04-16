@@ -166,6 +166,11 @@ function rayleighiteration(Matrix::AbstractMatrix,
         overflowstrategy)
 end
 
+mutable struct ArnoldiResult
+    H::AbstractMatrix
+    numColumns::Integer
+end
+
 function arnoldi(Matrix::AbstractMatrix,
     Guess::AbstractVector,
     NumColumns::Integer)
@@ -181,6 +186,7 @@ function arnoldi(Matrix::AbstractMatrix,
     q = normalize(Guess)
     Q[1:rows, 1] = q
 
+    usedColumns = 0
     for i = 1:NumColumns
         v = Matrix * Q[1:rows, i]
 
@@ -196,12 +202,17 @@ function arnoldi(Matrix::AbstractMatrix,
 
         H[numJs + 1, i] = norm(v)
 
+        usedColumns = usedColumns + 1
+        if (H[numJs + 1, i] < 0.0000001)
+            break
+        end
+
         if (i < NumColumns)
             Q[1:rows, i + 1] = v / H[numJs + 1, i]
         end
     end
 
-    return H
+    return ArnoldiResult(H, usedColumns)
 end
 
 end
