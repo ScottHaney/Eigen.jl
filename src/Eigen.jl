@@ -169,6 +169,7 @@ end
 mutable struct ArnoldiResult
     H::AbstractMatrix
     numColumns::Integer
+    wasStopped::Bool
 end
 
 function arnoldi(Matrix::AbstractMatrix,
@@ -187,6 +188,7 @@ function arnoldi(Matrix::AbstractMatrix,
     Q[1:rows, 1] = q
 
     usedColumns = 0
+    wasStopped = false
     for i = 1:NumColumns
         v = Matrix * Q[1:rows, i]
 
@@ -204,6 +206,7 @@ function arnoldi(Matrix::AbstractMatrix,
 
         usedColumns = usedColumns + 1
         if (H[numJs + 1, i] < 0.0000001)
+            wasStopped = true
             break
         end
 
@@ -212,7 +215,7 @@ function arnoldi(Matrix::AbstractMatrix,
         end
     end
 
-    return ArnoldiResult(H, usedColumns)
+    return ArnoldiResult(H, usedColumns, wasStopped)
 end
 
 end
