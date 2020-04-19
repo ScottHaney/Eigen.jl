@@ -88,9 +88,14 @@ function iterationmethod(Matrix::AbstractMatrix,
     StartingValues,
     IterationAction::Function,
     StoppingCriteria::IterativeStoppingCriteria,
-    overflowStrategy)
+    overflowStrategy,
+    makeUpperHessenberg = true)
 
-    iterationmethod(LinearAlgebra.UpperHessenberg(LinearAlgebra.hessenberg(Matrix).H),
+    if (makeUpperHessenberg)
+        Matrix = LinearAlgebra.UpperHessenberg(LinearAlgebra.hessenberg(Matrix).H)
+    end
+
+    iterationmethodinternal(Matrix,
         StartingValues,
         IterationAction,
         StoppingCriteria,
@@ -98,6 +103,20 @@ function iterationmethod(Matrix::AbstractMatrix,
 end
 
 function iterationmethod(Matrix::LinearAlgebra.UpperHessenberg,
+    StartingValues,
+    IterationAction::Function,
+    StoppingCriteria::IterativeStoppingCriteria,
+    overflowStrategy)
+
+    iterationmethodinternal(Matrix,
+        StartingValues,
+        IterationAction,
+        StoppingCriteria,
+        overflowStrategy)
+
+end
+
+function iterationmethodinternal(Matrix::AbstractMatrix,
     StartingValues,
     IterationAction::Function,
     StoppingCriteria::IterativeStoppingCriteria,
