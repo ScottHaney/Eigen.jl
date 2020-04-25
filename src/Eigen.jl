@@ -247,4 +247,20 @@ function QRAlgorithm(Matrix::AbstractMatrix)
     Matrix
 end
 
+function QRAlgorithmWithShifts(Matrix::AbstractMatrix,
+    shifts)
+    
+    numShifts = length(shifts)
+    numRows = size(Matrix, 1)
+
+    for i = 1:numShifts
+        shiftMatrix = shifts[i] * Matrix(I, numRows, numRows)
+
+        factors = LinearAlgebra.qr(Matrix) - shiftMatrix
+        Matrix = factors.R * factors.Q + shiftMatrix
+    end
+
+    Matrix
+end
+
 end
