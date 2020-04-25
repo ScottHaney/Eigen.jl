@@ -237,4 +237,14 @@ function arnoldi(Matrix::AbstractMatrix,
     return ArnoldiResult(H, usedColumns, wasStopped)
 end
 
+function QRAlgorithm(Matrix::AbstractMatrix)
+    iterations = 10
+    for i = 1:iterations
+        factors = LinearAlgebra.qr(Matrix)
+        Matrix = factors.R * factors.Q
+    end
+
+    Matrix
+end
+
 end
